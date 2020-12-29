@@ -9,8 +9,8 @@ load = function(opt){
     var imports;
     imports = opt.imports || {};
     imports.env = import$({
-      memoryBase: 0,
-      tableBase: 0,
+      __memory_base: 0,
+      __table_base: 0,
       abort: alert
     }, imports.env || {});
     imports.env.print = function(it){
@@ -23,18 +23,24 @@ load = function(opt){
     }
     if (!imports.env.table) {
       imports.env.table = new WebAssembly.Table({
-        initial: 0,
+        initial: 256,
         element: 'anyfunc'
       });
     }
-    return new WebAssembly.Instance(module, imports);
+    return {
+      instance: new WebAssembly.Instance(module, imports),
+      imports: imports
+    };
   });
 };
 load({
   path: '/assets/lib/wasm/dev/main.wasm'
-}).then(function(instance){
-  var lc, view;
+}).then(function(arg$){
+  var instance, imports, lc, memory, view;
+  instance = arg$.instance, imports = arg$.imports;
   lc = {};
+  memory = new Uint8Array(imports.env.memory.buffer, 0, 11);
+  lc.text = new TextDecoder().decode(memory);
   return view = new ldView({
     root: document.body,
     action: {
@@ -50,6 +56,11 @@ load({
         var node;
         node = arg$.node;
         return node.value = lc.value || 0;
+      },
+      memory: function(arg$){
+        var node;
+        node = arg$.node;
+        return node.value = lc.text;
       }
     }
   });
