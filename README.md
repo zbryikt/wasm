@@ -37,5 +37,7 @@ in JS file, add `print` in `importObject.env`:
 
 ## Reference
 
+ - https://blog.techbridge.cc/2017/06/17/webassembly-js-future/
  - https://gist.github.com/kripken/59c67556dc03bb6d57052fedef1e61ab
-
+   - https://github.com/googlecodelabs/web-assembly-introduction/issues/11
+ - https://github.com/guybedford/wasm-intro
