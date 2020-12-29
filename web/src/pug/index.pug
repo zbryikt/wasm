@@ -1,0 +1,40 @@
+doctype html
+html
+  include /../../static/assets/lib/bootstrap.ldui/main/index.pug
+  head
+    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+    +css("/assets/lib/@loadingio/transition.css/main/transition.min.css")
+    +css("/css/index.css")
+  body
+    .w-1024.mx-auto.rwd.my-4
+      .btn.btn-primary(ld="run") Run
+      hr
+      input.form-control(ld="input", value="5")
+      input.form-control(ld="output")
+    +script("/assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("/assets/lib/ldview/main/ldview.min.js")
+    script: :lsc
+      # loader adopted from https://gist.github.com/kripken/59c67556dc03bb6d57052fedef1e61ab
+      load = (opt = {}) ->
+        fetch(opt.path)
+          .then -> it.arrayBuffer!
+          .then -> WebAssembly.compile it
+          .then (module) ->
+            imports = opt.imports or {}
+            imports.env = {memoryBase: 0, tableBase: 0, abort: alert} <<< (imports.env or {})
+            if !imports.env.memory => imports.env.memory = new WebAssembly.Memory initial: 256
+            if !imports.env.table => imports.env.table = new WebAssembly.Table initial: 0, element: \anyfunc
+            new WebAssembly.Instance(module, imports);
+      load {path: '/assets/lib/wasm/dev/main.wasm'}
+        .then (instance) ->
+          lc = {}
+          view = new ldView do
+            root: document.body
+            action: click: do
+              run: ->
+                lc.value = instance.exports.doubler(view.get('input').value)
+                view.render \output
+            handler:
+              output: ({node}) -> node.value = lc.value or 0
+

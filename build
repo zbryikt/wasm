@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+echo "prepare..."
+rm -rf dist
+mkdir -p dist
+
+echo "compile main.cpp..."
+source ~/workspace/other/emscripten-core/emsdk/emsdk_env.sh
+emcc src/main.c -Os -s WASM=1 -s SIDE_MODULE=1 -o dist/main.wasm
+
+
+echo "copy dist to web ..."
+rm -rf web/static/assets/lib/wasm/dev/
+mkdir -p web/static/assets/lib/wasm/dev/
+cp -R dist/* web/static/assets/lib/wasm/dev/
