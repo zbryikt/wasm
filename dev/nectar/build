@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+source ~/workspace/other/emscripten-core/emsdk/emsdk_env.sh
+# these might be necessary:
+# npm install nectarjs_external
+# nectar --install_external
+nectar --env wasm main.js

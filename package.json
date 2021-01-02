@@ -42,5 +42,8 @@
       "@loadingio/transition.css",
       "ldview"
     ]
+  },
+  "dependencies": {
+    "nectarjs_external": "^0.7.109"
   }
 }
